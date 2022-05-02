@@ -1,0 +1,15 @@
+.game {
+  width: 700px;
+  position: relative;
+}
+.dyno {
+  width: 100px;
+  height: 100px;
+  background: red;
+}
+.obstacle {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background: green;
+}

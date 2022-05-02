@@ -14,8 +14,20 @@ class Game {
     const obstacle1 = new Obstacle(wrapper);
     const render = (time) => {
       requestAnimationFrame((timeStamp) => {
-        obstacle1.setPosition(obstacle1.position - timeStamp / 10000);
+        if (!this.lastTime) {
+          this.lastTime = timeStamp;
+        }
+        const delta = this.lastTime - timeStamp;
+        this.lastTime = timeStamp;
+        obstacle1.setPosition(obstacle1.position + delta / 5);
+        if (obstacle1.position < -100) {
+          obstacle1.setPosition(700);
+        }
         dyno.tick(timeStamp);
+        const isCollided = dyno.collision(obstacle1.getRect());
+        if (isCollided) {
+          console.log(isCollided);
+        }
         render(timeStamp);
       });
     };
@@ -42,13 +54,17 @@ class Dyno {
     const delta = this.lastTime - time;
     this.lastTime = time;
     if (this.position < 200) {
-      this.setPosition(this.position - 1 * delta);
+      this.setPosition(this.position - 0.1 * delta);
     } else {
       this.setPosition(200);
     }
   }
   jump() {
     this.setPosition(0);
+  }
+  collision(rect) {
+    // console.log(rect, this.position);
+    return inBox({ x: 50, y: this.position + 50 }, rect);
   }
 }
 class Obstacle {
@@ -65,5 +81,24 @@ class Obstacle {
     this.position = position;
     this.element.style.left = this.position + `px`;
   }
+  getRect() {
+    return { left: this.position, top: 200, width: 100, height: 100 };
+  }
 }
+///////////////////////////////////////////////
+function inBox(point, rect) {
+  return (
+    point.x > rect.left &&
+    point.x < rect.left + rect.width &&
+    point.y > rect.top &&
+    point.y < rect.top + rect.height
+  );
+}
+console.log(
+  inBox({ x: 50, y: 50 }, { left: 0, top: 0, width: 100, height: 100 })
+);
+console.log(
+  inBox({ x: 150, y: 50 }, { left: 0, top: 0, width: 100, height: 100 })
+);
+
 new Game(document.body);
